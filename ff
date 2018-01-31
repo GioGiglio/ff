@@ -53,6 +53,7 @@ function on_files_found {
 
 	if [ $OCC -eq 1 ]; then
 		echo "1 occurrence found"
+		echo $PATHS
 		on_file_selected $PATHS
 	else
 		echo "$OCC occurrences found"
