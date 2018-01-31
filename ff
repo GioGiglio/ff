@@ -37,6 +37,7 @@ function on_file_selected {
 			# check for errors
 			if ! [ $? -eq 0 ]; then
 				echo 'Error: could not open the file'
+				echo 'See ff --help for more info'
 				exit
 			fi
 			;;
