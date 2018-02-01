@@ -7,7 +7,7 @@ Searching files directly from the shell is never been easier
 3. Now just type `ff` on shell and start searching files!
 
 # Usage
-- `ff [-i] [-c] [filename]`
+- `ff [-i] [-c] [-l] [filename]`
 - `ff` ( the script will prompt you to insert the filename )
 - `ff --help` for extra info
 
