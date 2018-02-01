@@ -32,13 +32,19 @@ function on_file_selected {
 			break ;;
 
 		Show)
-			less $1 2> /dev/null
+			# check mime type of the file before opening 
+			local MIMETYPE=$(file --mime-type $1 | cut -d ' ' -f 2 | cut -d '/' -f 1)
+			if [ "$MIMETYPE" != "text" ]; then
+				echo "Cannot show the content of a $MIMETYPE file, use Open instead"
+			else
+				less $1 2> /dev/null
 
-			# check for errors
-			if ! [ $? -eq 0 ]; then
-				echo 'Error: could not open the file'
-				echo 'See ff --help for more info'
-				exit
+				# check for errors
+				if ! [ $? -eq 0 ]; then
+					echo 'Error: could not open the file'
+					echo 'See ff --help for more info'
+					exit
+				fi
 			fi
 			;;
 		Exit)
