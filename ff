@@ -78,12 +78,13 @@ function on_files_found {
 }
 
 function print_help {
-	echo 'Usage: ff [OPTIONS]... [FILE]...'
+	echo 'Usage: ff [OPTION]... [FILE]...'
 	echo 'Searchs a file'
 	echo 
 	echo '    -i, --ignorecase    ignores case of filename'
 	echo '    -c, --containing    matches files containing ... in the path'
 	echo '    -h, --help          prints this help and exit'
+	echo '    -l, --limit         limits the occurrences to be found'
 	echo
 	echo 'Somethimes this error message can be shown:'
 	echo '    Error: could not open the file'
@@ -102,9 +103,11 @@ function print_help {
 
 # Script starts here #
 
+COMMAND=""
 ARG_I=0
 ARG_C=0
 ARG_H=0
+ARG_L=0
 
 POSITIONAL=()
 
@@ -124,6 +127,11 @@ POSITIONAL=()
 				;;
 			-c|--containing)
 				ARG_C=1
+				shift
+				;;
+			-l|--limit)
+				ARG_L="$2"
+				shift
 				shift
 				;;
 			*)
@@ -149,25 +157,35 @@ else
 	FILENAME=$1
 fi
 
-#Check ARG_IGNORECASE and ARG_CONTAINING
+#Check ARGS
 
 if [ $ARG_I -eq 1 ]; then
+	# IGNORECASE
 	if [ $ARG_C -eq 1 ]; then
-		# IGNORECASE, CONTAIN
-		PATHS="$(locate -ir "/$FILENAME")"
+		# -> CONTAIN
+		COMMAND"locate -ir /$FILENAME"
 	else
-		# IGNORECASE
-		PATHS="$(locate -ir "/$FILENAME\$")"
+		# -> NOT CONTAIN
+		COMMAND="locate -ir /$FILENAME\$"
 	fi
 else
+	# NOT IGNORECASE
 	if [ $ARG_C -eq 1 ]; then
-		# NOT IGNORECASE, CONTAIN
-		PATHS="$(locate -r "/$FILENAME")"
+		# -> CONTAIN
+		COMMAND="locate -r /$FILENAME"
 	else
-		#NOT IGNORECASE, NOT CONTAIN
-		PATHS="$(locate -r "/$FILENAME\$")"
+		# -> NOT CONTAIN
+		COMMAND="locate -r /$FILENAME\$"
 	fi
 fi
+
+# CHECK LIMIT
+if [ $ARG_L -ne 0 ]; then
+	COMMAND="$COMMAND -l $ARG_L"
+fi
+
+# Execute command
+PATHS=$($COMMAND)
 
 if [ -z "$PATHS" ]; then
 	echo "$FILENAME" not found
